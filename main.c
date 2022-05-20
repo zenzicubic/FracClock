@@ -13,8 +13,6 @@
 #define G 0.12156
 #define B 0.31764
 
-int frame = 0;
-
 void drawCircle() {
     // draw the clock circle
     float x, y;
@@ -75,7 +73,7 @@ void loop(void) {
     float a1 = (secs / 60.0f) * 6;
     float a2 =  secs * 6;
 
-    // draw the tree by the frame count mod 360
+    // draw the tree using those angles
     glPushMatrix();
     glTranslatef(WIDTH / 2, HEIGHT / 2, 1);
     glLineWidth(1.3);
@@ -83,7 +81,6 @@ void loop(void) {
     glPopMatrix();
 
     glFlush();
-    frame++;
 }
 
 void idle() { glutPostRedisplay(); }
