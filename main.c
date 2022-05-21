@@ -4,14 +4,23 @@
 
 #define HEIGHT 800
 #define WIDTH 1421
+
+// scaling and positioning constants
 #define SIZE HEIGHT / 7
+#define CX WIDTH >> 1
+#define CY HEIGHT >> 1
+#define ITER 14
+
+// circle-related constants
 #define RADIUS SIZE * 1.25
-#define PI 3.14159265358
+#define TAU 6.28318530718
 
 // these are just coloring constants
 #define R 0.27058
 #define G 0.12156
 #define B 0.31764
+
+int frame = 0;
 
 void drawCircle() {
     // draw the clock circle
@@ -19,9 +28,9 @@ void drawCircle() {
     glColor3f(0.2, 0.2, 0.2);
     glLineWidth(1.5);
     glBegin(GL_LINE_LOOP);
-    for (float t = 0; t < 2 * PI; t += 0.01) {
-        x = (WIDTH >> 1) + (RADIUS * cos(t));
-        y = (HEIGHT >> 1) + (RADIUS * sin(t));
+    for (float t = 0; t < TAU; t += 0.15) {
+        x = RADIUS * cos(t);
+        y = RADIUS * sin(t);
         glVertex2d(x, y);
     }
     glEnd();
@@ -31,7 +40,7 @@ void fractal(float l, float theta, float theta1, int i) {
     float nl = l / 1.5f;
 
     // set the color
-    float b = i/28.0f;
+    float b = i / (ITER * 2.0f);
     if (i > 0) {
         // draw the left branch
         glPushMatrix();
@@ -64,8 +73,6 @@ void fractal(float l, float theta, float theta1, int i) {
 
 void loop(void) {
     glClear(GL_COLOR_BUFFER_BIT);
-    drawCircle();
-    glColor3f(R+0.5, G+0.5, B+0.5);
 
     // calculate the angles
     int t = glutGet(GLUT_ELAPSED_TIME);
@@ -73,14 +80,18 @@ void loop(void) {
     float a1 = (secs / 60.0f) * 6;
     float a2 =  secs * 6;
 
-    // draw the tree using those angles
+    // draw the tree and the clock circle
     glPushMatrix();
-    glTranslatef(WIDTH / 2, HEIGHT / 2, 1);
+    glTranslatef(CX, CY, 1);
+    drawCircle();
+    glColor3f(R+0.5, G+0.5, B+0.5);
+
     glLineWidth(1.3);
-    fractal(SIZE, a1, a2, 14);
+    fractal(SIZE, a1, a2, ITER);
     glPopMatrix();
 
     glFlush();
+    frame++;
 }
 
 void idle() { glutPostRedisplay(); }
