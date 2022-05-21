@@ -7,9 +7,9 @@
 
 // scaling and positioning constants
 #define SIZE HEIGHT / 7
-#define CX WIDTH >> 1
-#define CY HEIGHT >> 1
-#define ITER 14
+#define CX WIDTH / 2
+#define CY HEIGHT / 2
+#define ITER 13
 
 // circle-related constants
 #define RADIUS SIZE * 1.25
