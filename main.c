@@ -1,5 +1,5 @@
-#include <GL/gl.h>
 #include <GL/glut.h>
+#include <sys/time.h>
 #include <math.h>
 
 #define HEIGHT 800
@@ -20,8 +20,6 @@
 #define G 0.12156
 #define B 0.31764
 
-int frame = 0;
-
 void drawCircle() {
     // draw the clock circle
     float x, y;
@@ -37,7 +35,7 @@ void drawCircle() {
 }
 
 void fractal(float l, float theta, float theta1, int i) {
-    float nl = l / 1.5f;
+    float nl = l / 1.4f;
 
     // set the color
     float b = i / (ITER * 2.0f);
@@ -74,27 +72,33 @@ void fractal(float l, float theta, float theta1, int i) {
 void loop(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // calculate the angles
-    int t = glutGet(GLUT_ELAPSED_TIME);
-    float secs = (t / 1000.0f);
-    float a1 = (secs / 60.0f) * 6;
-    float a2 =  secs * 6;
+    // calculate times and angles
+    struct timeval curTime;
+    gettimeofday(&curTime, NULL);
+    struct tm *tm_struct = localtime((const time_t*)&curTime);
 
-    // draw the tree and the clock circle
+    int minutes = tm_struct->tm_min;
+    int seconds = tm_struct->tm_sec;
+    float csecs = (seconds + (curTime.tv_usec / 1000000.0f)) + (minutes * 60.0f);
+    float minang = (csecs / 60.0f) * 6;
+    float secang =  csecs * 6;
+
+    // draw the fractal and the clock circle
     glPushMatrix();
     glTranslatef(CX, CY, 1);
     drawCircle();
     glColor3f(R+0.5, G+0.5, B+0.5);
 
-    glLineWidth(1.3);
-    fractal(SIZE, a1, a2, ITER);
+    glLineWidth(2);
+    fractal(SIZE, minang, secang, ITER);
     glPopMatrix();
 
     glFlush();
-    frame++;
 }
 
-void idle() { glutPostRedisplay(); }
+void idle() { 
+    glutPostRedisplay();
+}
 
 int main (int argc, char** argv) {
     glMatrixMode(GL_MODELVIEW);
